@@ -66,6 +66,7 @@ public final class Tpplus extends JavaPlugin {
                             break;
                         case "help":
                             // 查看使用帮助
+                            help(sender);
                             break;
                         default:
                             sendMsg((Player) sender, "不支持的指令，/tpplus help查看使用帮助");
@@ -123,10 +124,33 @@ public final class Tpplus extends JavaPlugin {
                     }
                 }
                 if (args.length == 3) {
+                    Player player = (Player) sender;
                     // 三个参数 认为是 set [名字] [目标点名字]
                     if (!"set".equals(args[0])) {
-                        sendMsg((Player) sender, "不支持的指令，/tpplus help查看使用帮助");
+                        sendMsg(player, "不支持的指令，/tpplus help查看使用帮助");
                     }
+                    String newName = args[1];
+                    String targetName = args[2];
+                    if (tpList.get(newName) != null) {
+                        sendMsg(player, "已存在同名传送阵，请修改后重试");
+                        return true;
+                    }
+                    if (tpList.get(targetName) == null) {
+                        sendMsg(player, "目标传送阵不存在，请确认后重试");
+                        return true;
+                    }
+                    TpInfo tpInfo = new TpInfo();
+                    tpInfo.setName(newName);
+                    Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(player.getLocation());
+                    tpInfo.setLocation(String.format("%s %s %s", block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ()));
+                    tpInfo.setCanTpLocation(new ArrayList<String>(){{add(targetName);}});
+                    // 创建文件
+                    File file = new File(getDataFolder().getAbsolutePath() + File.separator + newName + ".yml");
+                    file.createNewFile();
+                    FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+                    configuration.set("tpinfo.location", tpInfo.getLocation());
+                    configuration.set("tpinfo.canTpLocation", StringUtils.join(tpInfo.getCanTpLocation(), ","));
+                    tpList.put(tpInfo.getName(), tpInfo);
                 }
             }catch (Exception e) {
                 LogUtil.log(e.getMessage());
@@ -135,6 +159,17 @@ public final class Tpplus extends JavaPlugin {
 
         }
         return true;
+    }
+
+    private void help(CommandSender sender) {
+        Player player = (Player) sender;
+        sendMsg(player, "/tpplus 触发传送");
+        sendMsg(player, "/tpplus list 查看当前所有传送阵");
+        sendMsg(player, "/tpplus show 显示当前传送阵名称");
+        sendMsg(player, "/tpplus set [名称1] 在当前位置创建一个名字为名称1的传送阵");
+        sendMsg(player, "/tpplus link [名称2] 将当前传送阵与名字为名称2的传送阵连接起来(单向)");
+        sendMsg(player, "/tpplus set [名称1] [名称2] 在当前位置创建一个名字为名称1的传送阵并同时连接名称2传送阵");
+        sendMsg(player, "/tpplus help 查看帮助");
     }
 
     private TpInfo getCurrentTpInfo(CommandSender sender) {
@@ -223,7 +258,7 @@ public final class Tpplus extends JavaPlugin {
         Player player = (Player) sender;
         Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(player.getLocation());
         // 钻石块
-        if (!block.getType().equals(Material.DIAMOND_BLOCK)) {
+        if (!block.getType().equals(Material.IRON_BLOCK)) {
             return false;
         }
         // 钻石块附近有岩浆
