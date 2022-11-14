@@ -26,6 +26,7 @@ public final class Tpplus extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         // 加载配置
         loadConfig();
         LogUtil.log("tp plus 已装载");
@@ -40,7 +41,7 @@ public final class Tpplus extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equals("tpplus") && getConfig().getBoolean("tpplus.enable")) {
             try {
-                if (judgeLocation(sender)) {
+                if (!judgeLocation(sender)) {
                     sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
                     return true;
                 }
@@ -55,6 +56,10 @@ public final class Tpplus extends JavaPlugin {
                     switch (args[0]) {
                         case "list":
                             // 查看当前所有传送点的名字
+                            if (tpList.size() == 0) {
+                                sendMsg((Player) sender, "暂无传送阵");
+                                break;
+                            }
                             sendMsg((Player) sender, String.join(",", tpList.keySet()));
                             break;
                         case "show":
@@ -94,6 +99,7 @@ public final class Tpplus extends JavaPlugin {
                             FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                             configuration.set("tpinfo.location", tpInfo.getLocation());
                             configuration.set("tpinfo.canTpLocation", StringUtils.join(tpInfo.getCanTpLocation(), ","));
+                            configuration.save(file);
                             tpList.put(tpInfo.getName(), tpInfo);
                             break;
                         case "link":
@@ -117,6 +123,7 @@ public final class Tpplus extends JavaPlugin {
                             File updateFile = new File(getDataFolder().getAbsolutePath() + File.separator + linkTpInfo.getName() + ".yml");
                             FileConfiguration updateConfig = YamlConfiguration.loadConfiguration(updateFile);
                             updateConfig.set("tpinfo.canTpLocation", StringUtils.join(linkTpInfo.getCanTpLocation(), ","));
+                            updateConfig.save(updateFile);
                             break;
                         default:
                             sendMsg((Player) sender, "不支持的指令，/tpplus help查看使用帮助");
@@ -150,6 +157,7 @@ public final class Tpplus extends JavaPlugin {
                     FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                     configuration.set("tpinfo.location", tpInfo.getLocation());
                     configuration.set("tpinfo.canTpLocation", StringUtils.join(tpInfo.getCanTpLocation(), ","));
+                    configuration.save(file);
                     tpList.put(tpInfo.getName(), tpInfo);
                 }
             }catch (Exception e) {
