@@ -2,6 +2,7 @@ package com.murongyehua.tpplus;
 
 import com.murongyehua.tpplus.common.LogUtil;
 import com.murongyehua.tpplus.common.TpInfo;
+import com.murongyehua.tpplus.listener.InventoryClickListener;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -29,11 +31,14 @@ public final class Tpplus extends JavaPlugin {
         saveDefaultConfig();
         // 加载配置
         loadConfig();
+        // 注册监听器
+        Bukkit.getServer().getPluginManager().registerEvents(new InventoryClickListener(),this);
         LogUtil.log("tp plus 已装载");
     }
 
     @Override
     public void onDisable() {
+        InventoryClickEvent.getHandlerList().unregister(this);
         LogUtil.log("tp plus 已卸载");
     }
 
@@ -257,6 +262,8 @@ public final class Tpplus extends JavaPlugin {
         }
     }
 
+
+
     /**
      * 判断位置条件
      *
@@ -264,7 +271,7 @@ public final class Tpplus extends JavaPlugin {
      */
     private boolean judgeLocation(CommandSender sender) {
         Player player = (Player) sender;
-        Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(player.getLocation());
+        Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(player.getLocation().getBlockX(), player.getLocation().getBlockY() - 1, player.getLocation().getBlockZ());
         // 钻石块
         if (!block.getType().equals(Material.IRON_BLOCK)) {
             return false;
@@ -272,32 +279,32 @@ public final class Tpplus extends JavaPlugin {
         // 钻石块附近有岩浆
         // 前
         Block beforeBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(
-                player.getLocation().getBlockX() + 1, player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-        if (beforeBlock.getType().equals(Material.MAGMA_CREAM)) {
+                block.getLocation().getBlockX() + 1, block.getLocation().getBlockY(), block.getLocation().getBlockZ());
+        if (beforeBlock.getType().equals(Material.LAVA)) {
             return true;
         }
         // 后
         Block afterBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(
-                player.getLocation().getBlockX() - 1, player.getLocation().getBlockY(), player.getLocation().getBlockZ());
-        if (afterBlock.getType().equals(Material.MAGMA_CREAM)) {
+                block.getLocation().getBlockX() - 1, block.getLocation().getBlockY(), block.getLocation().getBlockZ());
+        if (afterBlock.getType().equals(Material.LAVA)) {
             return true;
         }
         // 左
         Block leftBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(
-                player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ() + 1);
-        if (leftBlock.getType().equals(Material.MAGMA_CREAM)) {
+                block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ() + 1);
+        if (leftBlock.getType().equals(Material.LAVA)) {
             return true;
         }
         // 右
         Block rightBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(
-                player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ() - 1);
-        if (rightBlock.getType().equals(Material.MAGMA_CREAM)) {
+                block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ() - 1);
+        if (rightBlock.getType().equals(Material.LAVA)) {
             return true;
         }
         // 下
         Block downBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(
-                player.getLocation().getBlockX(), player.getLocation().getBlockY() - 1, player.getLocation().getBlockZ());
-        if (downBlock.getType().equals(Material.MAGMA_CREAM)) {
+                block.getLocation().getBlockX(), block.getLocation().getBlockY() - 1, block.getLocation().getBlockZ());
+        if (downBlock.getType().equals(Material.LAVA)) {
             return true;
         }
         return false;
