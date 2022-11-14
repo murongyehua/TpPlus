@@ -41,7 +41,7 @@ public final class Tpplus extends JavaPlugin {
         if (label.equals("tpplus") && getConfig().getBoolean("tpplus.enable")) {
             try {
                 if (judgeLocation(sender)) {
-                    sendMsg((Player) sender, "必须在合格的传送阵上设置传送点");
+                    sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
                     return true;
                 }
                 // 可以设置 /tpplus [子命令] [*名称] [*目标点]
