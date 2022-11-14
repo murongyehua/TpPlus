@@ -1,0 +1,13 @@
+name: Tpplus
+version: '${project.version}'
+main: com.murongyehua.tpplus.Tpplus
+api-version: 1.19
+commands:
+  tpplus:
+    #描述这个命令
+    description: 超级传送基础命令
+    #用法
+    usage: /<command>
+    #没有权限的提示消息
+    permission-message: 无执行权限
+
