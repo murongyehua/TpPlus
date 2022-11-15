@@ -79,6 +79,9 @@ public final class Tpplus extends JavaPlugin {
                                 sendMsg((Player) sender, "当前不在传送阵！！");
                             }
                             break;
+                        case "reload":
+                            reload();
+                            break;
                         case "help":
                             // 查看使用帮助
                             help(sender);
@@ -185,12 +188,13 @@ public final class Tpplus extends JavaPlugin {
 
     private void help(CommandSender sender) {
         Player player = (Player) sender;
-        sendMsg(player, "/tpplus 触发传送");
+        sendMsg(player, "/tpplus 触发传送 通过鼠标点击也可以触发");
         sendMsg(player, "/tpplus list 查看当前所有传送阵");
         sendMsg(player, "/tpplus show 显示当前传送阵名称");
-        sendMsg(player, "/tpplus set [名称1] 在当前位置创建一个名字为名称1的传送阵");
-        sendMsg(player, "/tpplus link [名称2] 将当前传送阵与名字为名称2的传送阵连接起来(单向)");
-        sendMsg(player, "/tpplus set [名称1] [名称2] 在当前位置创建一个名字为名称1的传送阵并同时连接名称2传送阵");
+        sendMsg(player, "/tpplus set 名称1 在当前位置创建一个名字为[名称1]的传送阵");
+        sendMsg(player, "/tpplus link 名称2 将当前传送阵与名字为[名称2]的传送阵连接起来(单向)");
+        sendMsg(player, "/tpplus set 名称1 名称2 在当前位置创建一个名字为[名称1]的传送阵并同时连接[名称2]传送阵");
+        sendMsg(player, "/tpplus reload 重载配置");
         sendMsg(player, "/tpplus help 查看帮助");
     }
 
@@ -274,6 +278,16 @@ public final class Tpplus extends JavaPlugin {
                 }
             }
         }
+    }
+
+    /**
+     * 重载配置 支持修改传送阵文件后重载
+     */
+    private void reload() {
+        // 重载config.yml
+        reloadConfig();
+        // 重载传送阵配置
+        loadConfig();
     }
 
 
