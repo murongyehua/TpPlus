@@ -1,5 +1,6 @@
 package com.murongyehua.tpplus;
 
+import com.murongyehua.tpplus.common.ENBaseType;
 import com.murongyehua.tpplus.common.LogUtil;
 import com.murongyehua.tpplus.common.TpInfo;
 import com.murongyehua.tpplus.listener.InventoryClickListener;
@@ -46,7 +47,7 @@ public final class Tpplus extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equals("tpplus") && getConfig().getBoolean("tpplus.enable")) {
             try {
-                if (!judgeLocation(sender)) {
+                if (!judgeLocation(((Player) sender).getLocation())) {
                     sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
                     return true;
                 }
@@ -111,6 +112,10 @@ public final class Tpplus extends JavaPlugin {
                             TpInfo linkTpInfo = this.getCurrentTpInfo(sender);
                             if (linkTpInfo == null) {
                                 sendMsg((Player) sender, "你当前不在传送阵，无法进行此操作");
+                                break;
+                            }
+                            if (linkTpInfo.getCanTpLocation().size() == 54) {
+                                sendMsg((Player) sender, "当前传送阵已达最大连接数，无法再建立连接");
                                 break;
                             }
                             String targetName = args[1];
@@ -217,6 +222,11 @@ public final class Tpplus extends JavaPlugin {
                 sendMsg(player, "目标传送阵不存在或已被摧毁");
                 return;
             }
+            String[] address = canTp.getLocation().split(" ");
+            if (!judgeLocation(new Location(Bukkit.getWorld("world"), Double.parseDouble(address[0]), Double.parseDouble(address[1]), Double.parseDouble(address[2])))) {
+                sendMsg(player, "目标传送阵已被破坏，为确保安全，请前往修复后再使用");
+                return;
+            }
             player.chat(String.format("/tp %s", canTp.getLocation()));
         }
         if (canList.size() > 1) {
@@ -267,13 +277,12 @@ public final class Tpplus extends JavaPlugin {
     /**
      * 判断位置条件
      *
-     * @param sender
+     * @param location
      */
-    private boolean judgeLocation(CommandSender sender) {
-        Player player = (Player) sender;
-        Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(player.getLocation().getBlockX(), player.getLocation().getBlockY() - 1, player.getLocation().getBlockZ());
+    private boolean judgeLocation(Location location) {
+        Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
         // 钻石块
-        if (!block.getType().equals(Material.IRON_BLOCK)) {
+        if (!block.getType().equals(ENBaseType.getMaterialByKey(getConfig().getString("tpplus.baseType")))) {
             return false;
         }
         // 钻石块附近有岩浆
