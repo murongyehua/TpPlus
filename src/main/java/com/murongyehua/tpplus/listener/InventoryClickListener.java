@@ -1,6 +1,7 @@
 package com.murongyehua.tpplus.listener;
 
 import com.murongyehua.tpplus.Tpplus;
+import com.murongyehua.tpplus.common.TpInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -22,7 +23,11 @@ public class InventoryClickListener implements Listener {
         }
         String tpId = itemStack.getItemMeta().getDisplayName();
         Player p = (Player) e.getWhoClicked();
-        String location = Tpplus.tpList.get(tpId).getLocation();
+        TpInfo tpInfo = Tpplus.tpList.get(tpId);
+        if (tpInfo == null) {
+            return;
+        }
+        String location = tpInfo.getLocation();
         Tpplus tpplus = new Tpplus();
         String[] address = location.split(" ");
         if (!tpplus.judgeLocation(new Location(Bukkit.getWorld("world"), Double.parseDouble(address[0]), Double.parseDouble(address[1]), Double.parseDouble(address[2])))) {
