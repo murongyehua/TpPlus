@@ -297,7 +297,7 @@ public final class Tpplus extends JavaPlugin {
      *
      * @param location
      */
-    private boolean judgeLocation(Location location) {
+    public boolean judgeLocation(Location location) {
         Block block = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(location.getBlockX(), location.getBlockY() - 1, location.getBlockZ());
         // 钻石块
         if (!block.getType().equals(ENBaseType.getMaterialByKey(getConfig().getString("tpplus.baseType")))) {
