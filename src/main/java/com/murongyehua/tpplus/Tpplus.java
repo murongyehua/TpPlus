@@ -4,6 +4,7 @@ import com.murongyehua.tpplus.common.ENBaseType;
 import com.murongyehua.tpplus.common.LogUtil;
 import com.murongyehua.tpplus.common.TpInfo;
 import com.murongyehua.tpplus.listener.InventoryClickListener;
+import com.murongyehua.tpplus.listener.PlayerInteractListener;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -34,12 +36,14 @@ public final class Tpplus extends JavaPlugin {
         loadConfig();
         // 注册监听器
         Bukkit.getServer().getPluginManager().registerEvents(new InventoryClickListener(),this);
+        Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
         LogUtil.log("tp plus 已装载");
     }
 
     @Override
     public void onDisable() {
         InventoryClickEvent.getHandlerList().unregister(this);
+        PlayerInteractEvent.getHandlerList().unregister(this);
         LogUtil.log("tp plus 已卸载");
     }
 
