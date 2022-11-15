@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.murongyehua</groupId>
-    <artifactId>tpplus</artifactId>
+    <artifactId>TpPlus</artifactId>
     <version>1.0.0-Beta</version>
     <packaging>jar</packaging>
 
