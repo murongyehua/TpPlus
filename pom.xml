@@ -6,7 +6,7 @@
 
     <groupId>com.murongyehua</groupId>
     <artifactId>TpPlus</artifactId>
-    <version>1.0.0-Beta</version>
+    <version>1.0.0-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>Tpplus</name>
