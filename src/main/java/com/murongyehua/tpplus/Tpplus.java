@@ -3,7 +3,6 @@ package com.murongyehua.tpplus;
 import com.murongyehua.tpplus.common.ENBaseType;
 import com.murongyehua.tpplus.common.LogUtil;
 import com.murongyehua.tpplus.common.TpInfo;
-import com.murongyehua.tpplus.listener.InventoryClickListener;
 import com.murongyehua.tpplus.listener.PlayerInteractListener;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -15,6 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -25,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.*;
 
-public final class Tpplus extends JavaPlugin {
+public final class Tpplus extends JavaPlugin implements Listener{
 
     public static Map<String, TpInfo> tpList = new HashMap<>();
 
@@ -35,15 +37,14 @@ public final class Tpplus extends JavaPlugin {
         // 加载配置
         loadConfig();
         // 注册监听器
-        Bukkit.getServer().getPluginManager().registerEvents(new InventoryClickListener(),this);
+        Bukkit.getServer().getPluginManager().registerEvents(this,this);
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
         LogUtil.log("tp plus 已装载");
     }
 
     @Override
     public void onDisable() {
-        InventoryClickEvent.getHandlerList().unregister(this);
-        PlayerInteractEvent.getHandlerList().unregister(this);
+        HandlerList.unregisterAll((Listener) this);
         LogUtil.log("tp plus 已卸载");
     }
 
@@ -347,5 +348,32 @@ public final class Tpplus extends JavaPlugin {
         player.sendMessage(msg);
     }
 
+    @EventHandler
+    public void onClick(InventoryClickEvent e) {
+        ItemStack itemStack = e.getCurrentItem();
+        if (itemStack == null) {
+            return;
+        }
+        if (itemStack.getItemMeta() == null) {
+            return;
+        }
+        String tpId = itemStack.getItemMeta().getDisplayName();
+        Player p = (Player) e.getWhoClicked();
+        TpInfo tpInfo = Tpplus.tpList.get(tpId);
+        if (tpInfo == null) {
+            return;
+        }
+        String location = tpInfo.getLocation();
+        String[] address = location.split(" ");
+        if (!judgeLocation(new Location(Bukkit.getWorld("world"), Double.parseDouble(address[0]), Double.parseDouble(address[1]), Double.parseDouble(address[2])))) {
+            sendMsg(p, "目标传送阵已被破坏，为确保安全，请前往修复后再使用");
+            p.closeInventory();
+            e.setCancelled(true);
+            return;
+        }
+        p.chat(String.format("/tp %s", location));
+        p.closeInventory();
+        e.setCancelled(true);
+    }
 
 }
