@@ -56,13 +56,13 @@ public final class Tpplus extends JavaPlugin implements Listener {
         if (label.equals("tpp") && getConfig().getBoolean("tpplus.enable")) {
             try {
                 Player player = (Player) sender;
-                if (!judgeLocation(player.getWorld().getName(), player.getLocation())) {
-                    sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
-                    return true;
-                }
                 // 可以设置 /tpplus [子命令] [*名称] [*目标点]
                 if (args.length == 0) {
                     // 没有参数 触发传送
+                    if (!judgeLocation(player.getWorld().getName(), player.getLocation())) {
+                        sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
+                        return true;
+                    }
                     this.tp(sender);
                 }
                 // 参数解析
@@ -101,6 +101,10 @@ public final class Tpplus extends JavaPlugin implements Listener {
                     // 两个参数 认为是 set [名字] 或者 link [名字] 如果不是则不支持
                     switch (args[0]) {
                         case "set":
+                            if (!judgeLocation(player.getWorld().getName(), player.getLocation())) {
+                                sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
+                                return true;
+                            }
                             String name = args[1];
                             if (tpList.get(name) != null) {
                                 sendMsg(player, "已存在同名传送阵，请修改后重试");
@@ -121,6 +125,10 @@ public final class Tpplus extends JavaPlugin implements Listener {
                             tpList.put(tpInfo.getName(), tpInfo);
                             break;
                         case "link":
+                            if (!judgeLocation(player.getWorld().getName(), player.getLocation())) {
+                                sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
+                                return true;
+                            }
                             TpInfo linkTpInfo = this.getCurrentTpInfo(sender);
                             if (linkTpInfo == null) {
                                 sendMsg(player, "你当前不在传送阵，无法进行此操作");
@@ -161,6 +169,10 @@ public final class Tpplus extends JavaPlugin implements Listener {
                     }
                 }
                 if (args.length == 3) {
+                    if (!judgeLocation(player.getWorld().getName(), player.getLocation())) {
+                        sendMsg((Player) sender, "你必须在合格且完整的传送阵上进行相关操作");
+                        return true;
+                    }
                     // 三个参数 认为是 set [名字] [目标点名字]
                     if (!"set".equals(args[0])) {
                         sendMsg(player, "不支持的指令，/tpplus help查看使用帮助");
