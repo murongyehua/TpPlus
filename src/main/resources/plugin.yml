@@ -3,7 +3,7 @@ version: '${project.version}'
 main: com.murongyehua.tpplus.Tpplus
 api-version: 1.19
 commands:
-  tpplus:
+  tpp:
     #描述这个命令
     description: 超级传送基础命令
     #用法

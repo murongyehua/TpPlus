@@ -28,10 +28,10 @@ public class PlayerInteractListener implements Listener {
             // 判断坐标
             for (TpInfo tpInfo : Tpplus.tpList.values()) {
                 String[] locations = tpInfo.getLocation().split(" ");
-                Block tempBlock = Objects.requireNonNull(Bukkit.getWorld("world")).getBlockAt(new Location(Bukkit.getWorld("world"), Double.parseDouble(locations[0]), Double.parseDouble(locations[1]) - 1, Double.parseDouble(locations[2])));
+                Block tempBlock = e.getPlayer().getWorld().getBlockAt(new Location(e.getPlayer().getWorld(), Double.parseDouble(locations[0]), Double.parseDouble(locations[1]) - 1, Double.parseDouble(locations[2])));
                 if (tempBlock.getLocation().equals(block.getLocation())) {
                     Player p = e.getPlayer();
-                    p.chat("/tpplus");
+                    p.chat("/tpp");
                 }
             }
         }
