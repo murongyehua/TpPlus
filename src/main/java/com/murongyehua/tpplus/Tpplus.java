@@ -202,8 +202,9 @@ public final class Tpplus extends JavaPlugin implements Listener {
 
     private void help(CommandSender sender) {
         Player player = (Player) sender;
-        sendMsg(player, "/tpp - 触发传送 通过鼠标点击也可以触发");
-        sendMsg(player, "/tpp 名称 - 传送到名字为[名称]的传送阵");
+        sendMsg(player, "/tpp - 在传送阵触发传送 通过鼠标点击也可以触发");
+        sendMsg(player, "/tpp 名称 - 任意位置传送到名字为[名称]的传送阵");
+        sendMsg(player, "/tpp all 名称 - 传送的同时将附近的实体一起传送");
         sendMsg(player, "/tpp list - 查看当前所有传送阵");
         sendMsg(player, "/tpp show - 显示当前传送阵名称");
         sendMsg(player, "/tpp set 名称1 - 在当前位置创建一个名字为[名称1]的传送阵");
